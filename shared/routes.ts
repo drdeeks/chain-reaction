@@ -35,8 +35,8 @@ export const api = {
       path: '/api/puzzles',
       body: z.object({
         difficulty: z.enum(['Easy', 'Medium', 'Hard']),
-        chain: z.array(z.string().trim()).min(3).max(10), // BUG FIX #22: Trim whitespace
-        hints: z.array(z.string().trim()),
+        chain: z.array(z.string().trim()).min(3).max(10),
+        hints: z.array(z.string().trim()).min(1), // BUG FIX #38: At least one hint required
         createdBy: z.string().optional(),
       }),
       responses: {
@@ -86,10 +86,10 @@ export const api = {
       method: 'POST' as const,
       path: '/api/leaderboard',
       body: z.object({
-        playerName: z.string().min(1).max(50).transform(s => s.trim().replace(/[<>]/g, '')), // BUG FIX #14: Sanitize HTML
+        playerName: z.string().min(1).max(50).transform(s => s.trim().replace(/[<>]/g, '')),
         puzzleId: z.number().positive(),
-        completionTime: z.number().min(1), // BUG FIX #16: Must be positive
-        hintsUsed: z.number().min(0), // BUG FIX #17: Can't be negative
+        completionTime: z.number().min(1),
+        hintsUsed: z.number().min(0),
       }),
       responses: {
         201: z.object({

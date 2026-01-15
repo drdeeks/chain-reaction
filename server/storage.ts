@@ -1,6 +1,6 @@
 import { db } from "./db";
 import { puzzles, leaderboard, type InsertPuzzle, type Puzzle, type LeaderboardEntry, type InsertLeaderboardEntry } from "@shared/schema";
-import { desc, eq } from "drizzle-orm";
+import { desc, eq, and } from "drizzle-orm"; // BUG FIX #34: Import 'and'
 
 export interface IStorage {
   getPuzzles(): Promise<Puzzle[]>;
@@ -29,6 +29,23 @@ export class DatabaseStorage implements IStorage {
   }
 
   async submitScore(entry: InsertLeaderboardEntry): Promise<LeaderboardEntry> {
+    // BUG FIX #34: Check for duplicate submissions
+    const existing = await db
+      .select()
+      .from(leaderboard)
+      .where(
+        and(
+          eq(leaderboard.puzzleId, entry.puzzleId),
+          eq(leaderboard.playerName, entry.playerName)
+        )
+      )
+      .limit(1);
+    
+    if (existing.length > 0) {
+      // Return existing score instead of creating duplicate
+      return existing[0];
+    }
+    
     // BUG FIX #7: Convert milliseconds to seconds for score calculation
     const timeInSeconds = Math.floor(entry.completionTime / 1000);
     const score = Math.max(0, 10000 - (timeInSeconds * 10) - (entry.hintsUsed * 500));
