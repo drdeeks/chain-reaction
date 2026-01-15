@@ -8,6 +8,48 @@ Chain Reaction is a fully functional word-linking puzzle game built as a Farcast
 
 ## Bug Fixes - 2026-01-15
 
+### Round 3: Additional 10 Bugs (31-40)
+
+**Bug #31: Query Client Infinite Stale Time**
+- **Issue**: `staleTime: Infinity` meant data never refetched
+- **Fix**: Changed to 5 minutes (5 * 60 * 1000)
+- **Location**: `client/src/lib/queryClient.ts`
+
+**Bug #32: No Retry on Mutations**
+- **Issue**: Transient network errors failed permanently
+- **Fix**: Added `retry: 1` with 1 second delay
+- **Location**: `client/src/lib/queryClient.ts`
+
+**Bug #33: Duplicate Puzzle Creation** - DOCUMENTED (future enhancement)
+
+**Bug #34: Duplicate Score Submissions**
+- **Issue**: Same player could submit multiple scores for same puzzle
+- **Fix**: Check existing scores before insert, return existing if found
+- **Location**: `server/storage.ts`
+
+**Bug #35: No Error Boundary**
+- **Issue**: Uncaught errors crashed entire app
+- **Fix**: Created ErrorBoundary component wrapping App
+- **Location**: `client/src/components/ErrorBoundary.tsx`, `client/src/App.tsx`
+
+**Bug #36: Empty Leaderboard Handling** - DOCUMENTED (UI enhancement)
+
+**Bug #37: Game State Not Persisted** - DOCUMENTED (future enhancement)
+
+**Bug #38: Empty Hints Array Allowed**
+- **Issue**: Could create puzzle with no hints
+- **Fix**: Added `.min(1)` to hints array validation
+- **Location**: `shared/routes.ts`
+
+**Bug #39: No Database Transactions** - DOCUMENTED (future enhancement)
+
+**Bug #40: No Structured Logging** - DOCUMENTED (future enhancement)
+
+### Bugs Fixed in Code: 5/10
+### Bugs Documented for Future: 5/10
+
+---
+
 ### Round 2: Additional 20 Bugs Fixed
 
 **Bug #11: No Rate Limiting** - DOCUMENTED (requires express-rate-limit package)  
