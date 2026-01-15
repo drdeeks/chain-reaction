@@ -1,9 +1,12 @@
 import { useState, useEffect, lazy, Suspense } from "react";
 import { usePuzzles } from "@/hooks/use-puzzles";
+import { useSubmitScore, useGenerateShare } from "@/hooks/use-leaderboard";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import canvasConfetti from "canvas-confetti";
 import { motion, AnimatePresence } from "framer-motion";
+import { Share2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const ChainNode = lazy(() => import("@/components/ChainNode").then(m => ({ default: m.ChainNode })));
 const GameControls = lazy(() => import("@/components/GameControls").then(m => ({ default: m.GameControls })));
@@ -15,7 +18,11 @@ export default function Game() {
   const [inputValue, setInputValue] = useState("");
   const [showHint, setShowHint] = useState(false);
   const [hintsUsed, setHintsUsed] = useState(0);
+  const [startTime, setStartTime] = useState<number>(Date.now());
+  const [completionTime, setCompletionTime] = useState<number>(0);
   const { toast } = useToast();
+  const submitScore = useSubmitScore();
+  const generateShare = useGenerateShare();
 
   const puzzle = puzzles?.[currentPuzzleIndex];
   const isGameWon = puzzle ? currentStep >= puzzle.chain.length - 1 : false;
@@ -25,10 +32,14 @@ export default function Game() {
     setInputValue("");
     setShowHint(false);
     setHintsUsed(0);
+    setStartTime(Date.now());
+    setCompletionTime(0);
   }, [currentPuzzleIndex]);
 
   useEffect(() => {
-    if (isGameWon) {
+    if (isGameWon && puzzle) {
+      const time = Date.now() - startTime;
+      setCompletionTime(time);
       canvasConfetti({
         particleCount: 100,
         spread: 60,
@@ -36,7 +47,7 @@ export default function Game() {
         colors: ['#A78BFA', '#2DD4BF', '#F472B6']
       });
     }
-  }, [isGameWon]);
+  }, [isGameWon, puzzle, startTime]);
 
   const handleGuess = (guess: string) => {
     if (!puzzle) return;
@@ -57,6 +68,34 @@ export default function Game() {
         title: "Not quite...",
         description: "Try again!",
       });
+    }
+  };
+
+  const handleShare = async () => {
+    if (!puzzle || !completionTime) return;
+    
+    try {
+      const result = await generateShare.mutateAsync({
+        puzzleId: puzzle.id,
+        completionTime,
+        hintsUsed,
+      });
+      
+      if (navigator.share) {
+        await navigator.share({
+          title: 'Chain Reaction',
+          text: result.shareText,
+          url: result.shareUrl,
+        });
+      } else {
+        await navigator.clipboard.writeText(`${result.shareText}\n${result.shareUrl}`);
+        toast({
+          title: "Copied to clipboard!",
+          description: "Share your score with friends",
+        });
+      }
+    } catch (error) {
+      console.error('Share failed:', error);
     }
   };
 
@@ -82,8 +121,9 @@ export default function Game() {
 
   if (error || !puzzle) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-red-400">
-        Error loading game
+      <div className="min-h-screen flex flex-col items-center justify-center text-red-400 p-4">
+        <p className="text-xl mb-4">Error loading game</p>
+        <Button onClick={() => window.location.reload()}>Retry</Button>
       </div>
     );
   }
@@ -135,6 +175,23 @@ export default function Game() {
       </div>
 
       <Suspense fallback={<div className="animate-pulse">Loading controls...</div>}>
+        {isGameWon && completionTime > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-4"
+          >
+            <Button
+              onClick={handleShare}
+              variant="outline"
+              className="border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/10"
+            >
+              <Share2 className="w-4 h-4 mr-2" />
+              Share Result
+            </Button>
+          </motion.div>
+        )}
+        
         <GameControls
           inputValue={inputValue}
           setInputValue={setInputValue}
@@ -146,6 +203,7 @@ export default function Game() {
           onReset={() => {
             setCurrentStep(1);
             setInputValue("");
+            setStartTime(Date.now());
           }}
           hintsUsed={hintsUsed}
           isGameWon={isGameWon}

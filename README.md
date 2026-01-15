@@ -1,62 +1,184 @@
 # Chain Reaction
 
-A streamlined word-linking puzzle game built as a Farcaster mini-app. Connect words using paint color names from major brands (Behr, Sherwin-Williams, Benjamin Moore).
+A word-linking puzzle game built as a Farcaster mini-app. Connect words using real paint color names from major brands to form compound words.
 
-## Features
+## 🎮 Game Overview
 
-- **Paint Color Word Bank**: Comprehensive collection of real paint color names
-- **Chain Link Logic**: Validate compound word formations
-- **Responsive Design**: Auto-scaling UI for all device sizes
-- **Lazy Loading**: Optimized performance with code splitting
+Chain Reaction challenges players to find missing words that connect a chain through compound word formations. Each word in the chain combines with the next to form a valid compound word (e.g., Dog + House = Doghouse, House + Boat = Houseboat).
+
+## ✨ Features
+
+### Core Gameplay
+- **600+ Paint Color Word Bank**: Unique, sentence-producing names from Behr, Sherwin-Williams, Benjamin Moore
+- **Smart Chain Logic**: 300+ validated compound word combinations
+- **Three Difficulty Levels**: Easy (5 words), Medium (6 words), Hard (7+ words)
+- **Hint System**: Contextual hints with scoring penalties
+- **Real-time Validation**: Instant feedback on guesses
+
+### Social Features
+- **Leaderboard**: Score-based rankings per puzzle (time + hints)
+- **Share Results**: Native share API integration with custom messages
+- **Create Puzzles**: Build and validate your own word chains
+- **Puzzle Validation**: Real-time compound word verification
+
+### Technical Excellence
+- **Lazy Loading**: Code-split components for optimal performance
+- **Responsive Design**: Auto-scaling UI for mobile, tablet, desktop
 - **Farcaster Integration**: Proper mini-app structure with frame support
-- **Enterprise Standards**: Clean architecture, type safety, performance optimized
+- **Error Handling**: Comprehensive error boundaries and user feedback
+- **TypeScript**: Full type safety across client and server
+- **Database**: PostgreSQL with Drizzle ORM
 
-## Tech Stack
-
-- React 18 with TypeScript
-- Vite for build optimization
-- TailwindCSS for responsive styling
-- Framer Motion for animations
-- Express backend with PostgreSQL
-- Drizzle ORM
-
-## Getting Started
+## 🚀 Quick Start
 
 ```bash
 # Install dependencies
 npm install
 
-# Run development server
+# Setup database
+npm run db:push
+
+# Development
 npm run dev
 
-# Build for production
+# Production build
 npm run build
-
-# Start production server
 npm start
 ```
 
-## Game Rules
+## 📁 Project Structure
 
-1. You're shown the first and last words in a chain
-2. Fill in the missing words that form compound words
-3. Each word connects to the next (e.g., Dog → House → Boat)
-4. All words come from real paint color names
+```
+chain-reaction/
+├── client/                 # React frontend
+│   ├── src/
+│   │   ├── components/    # UI components
+│   │   ├── hooks/         # Custom React hooks
+│   │   ├── pages/         # Route pages
+│   │   └── lib/           # Utilities
+│   └── index.html         # Entry point with Farcaster meta tags
+├── server/                # Express backend
+│   ├── routes.ts          # API endpoints
+│   ├── storage.ts         # Database layer
+│   └── index.ts           # Server entry
+├── shared/                # Shared code
+│   ├── wordbank.ts        # 600+ paint color names
+│   ├── chainLogic.ts      # Compound word validation
+│   ├── schema.ts          # Database schemas
+│   └── routes.ts          # API contracts
+└── farcaster.json         # Mini-app configuration
+```
 
-## Architecture
+## 🎯 Game Rules
 
-- `/client` - React frontend with lazy-loaded components
-- `/server` - Express API with database integration
-- `/shared` - Shared types, schemas, and word bank
-- `farcaster.json` - Mini-app configuration
+1. **Objective**: Fill in missing words between the start and end words
+2. **Constraint**: Each word must form a compound word with the next
+3. **Scoring**: 
+   - Base: 10,000 points
+   - Time penalty: -10 points per second
+   - Hint penalty: -500 points per hint
+4. **Word Bank**: All words are real paint color names
 
-## Word Bank
+## 🔧 API Endpoints
 
-Contains 200+ paint color names from:
-- Behr (Polar Bear, Silver Lining, Ocean Breeze)
-- Sherwin-Williams (Naval, Sea Salt, Agreeable Gray)
-- Benjamin Moore (Hale Navy, Chantilly Lace, Revere Pewter)
+### Puzzles
+- `GET /api/puzzles` - List all puzzles
+- `POST /api/puzzles` - Create new puzzle
+- `POST /api/puzzles/validate` - Validate word chain
 
-## License
+### Leaderboard
+- `GET /api/leaderboard/:puzzleId` - Get puzzle leaderboard
+- `POST /api/leaderboard` - Submit score
 
-MIT
+### Sharing
+- `POST /api/share` - Generate share link and text
+
+## 🎨 Paint Color Examples
+
+The word bank includes creative names like:
+- Storm Lightning
+- Heart To Heart
+- Sweet Juliet
+- Evening Slipper
+- Morning Glory
+- Secret Garden
+- Golden Gate
+- Ocean Breeze
+
+## 🏗️ Architecture
+
+### Frontend
+- **React 18** with TypeScript
+- **Vite** for build optimization
+- **TailwindCSS** for styling
+- **Framer Motion** for animations
+- **React Query** for data fetching
+- **Wouter** for routing
+
+### Backend
+- **Express** server
+- **PostgreSQL** database
+- **Drizzle ORM** for type-safe queries
+- **Zod** for validation
+
+### Deployment
+- Optimized for Farcaster frames
+- Mobile-first responsive design
+- Safe area insets for notched devices
+- Code splitting for fast loads
+
+## 🧪 Development
+
+```bash
+# Type checking
+npm run check
+
+# Database migrations
+npm run db:push
+
+# Build for production
+npm run build
+```
+
+## 📊 Scoring System
+
+```
+Score = 10,000 - (completionTime * 10) - (hintsUsed * 500)
+```
+
+- Faster completion = Higher score
+- Fewer hints = Higher score
+- Minimum score: 0
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Ensure all types pass: `npm run check`
+5. Submit a pull request
+
+## 📝 License
+
+MIT License - see LICENSE file for details
+
+## 🔗 Links
+
+- [Farcaster Documentation](https://docs.farcaster.xyz/)
+- [Paint Color References](https://www.behr.com/consumer/colors)
+
+## 🐛 Known Issues
+
+None currently. Report issues via GitHub.
+
+## 🎯 Roadmap
+
+- [ ] Daily challenges
+- [ ] Multiplayer mode
+- [ ] Achievement system
+- [ ] Custom themes
+- [ ] Sound effects
+
+---
+
+Built with ❤️ for the Farcaster community
