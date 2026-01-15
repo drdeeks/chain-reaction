@@ -1,0 +1,13 @@
+{
+  "name": "Chain Reaction",
+  "version": "1.0.0",
+  "description": "Word linking puzzle game using paint color names",
+  "icon": "/favicon.png",
+  "splashImage": "/splash.png",
+  "splashBackgroundColor": "#0f172a",
+  "homeUrl": "/",
+  "imageUrl": "/og-image.png",
+  "button": {
+    "title": "Play Chain Reaction"
+  }
+}

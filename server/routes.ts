@@ -2,7 +2,7 @@ import type { Express } from "express";
 import type { Server } from "http";
 import { storage } from "./storage";
 import { api } from "@shared/routes";
-import { z } from "zod";
+import { PAINT_COLORS } from "@shared/wordbank";
 
 export async function registerRoutes(
   httpServer: Server,
@@ -13,7 +13,6 @@ export async function registerRoutes(
     res.json(puzzles);
   });
 
-  // Seed data check
   await seedDatabase();
 
   return httpServer;
@@ -27,32 +26,47 @@ async function seedDatabase() {
     {
       difficulty: 'Easy',
       chain: ['Dog', 'House', 'Boat', 'Race', 'Car'],
-      hints: ['A pet\'s home', 'Floats on water', 'Competition', 'Has wheels']
+      hints: ['A pet\'s home', 'Floats on water', 'Competition']
     },
     {
       difficulty: 'Easy',
       chain: ['Sun', 'Flower', 'Pot', 'Luck', 'Charm'],
-      hints: ['Grows in gardens', 'Cooking container', 'Good fortune', 'Brings luck']
+      hints: ['Grows in gardens', 'Cooking container', 'Good fortune']
+    },
+    {
+      difficulty: 'Easy',
+      chain: ['Light', 'House', 'Keeper', 'Safe', 'Guard'],
+      hints: ['Building structure', 'One who keeps', 'Secure place']
     },
     {
       difficulty: 'Medium',
-      chain: ['Fire', 'Place', 'Holder', 'Space', 'Ship', 'Yard'],
-      hints: ['Where fires burn', 'Contains things', 'Empty area', 'Vessel', 'Outdoor area']
+      chain: ['Fire', 'Place', 'Holder', 'Cup', 'Board'],
+      hints: ['Location', 'Contains things', 'Drinking vessel']
     },
     {
       difficulty: 'Medium',
       chain: ['Time', 'Table', 'Cloth', 'Line', 'Dance'],
-      hints: ['Schedule', 'Covers tables', 'String or cord', 'Movement to music']
+      hints: ['Schedule', 'Covers tables', 'String or cord']
+    },
+    {
+      difficulty: 'Medium',
+      chain: ['Book', 'Mark', 'Down', 'Town', 'Ship'],
+      hints: ['Sign or target', 'Direction', 'Urban area']
     },
     {
       difficulty: 'Hard',
-      chain: ['Snow', 'Ball', 'Park', 'Bench', 'Mark', 'Down', 'Town'],
-      hints: ['Round ice', 'Recreation area', 'Seating', 'Target or sign', 'Direction', 'Urban area']
+      chain: ['Snow', 'Ball', 'Park', 'Bench', 'Press', 'Room', 'Mate'],
+      hints: ['Round ice', 'Recreation area', 'Seating', 'Media gathering', 'Space']
+    },
+    {
+      difficulty: 'Hard',
+      chain: ['Water', 'Fall', 'Out', 'Door', 'Bell', 'Hop', 'Scotch'],
+      hints: ['Cascade', 'Dispute', 'Entry', 'Rings', 'Jump']
     }
   ];
 
   for (const p of puzzlesToSeed) {
     await storage.createPuzzle(p);
   }
-  console.log('Seeded database with puzzles');
+  console.log('Seeded database with paint color word puzzles');
 }
