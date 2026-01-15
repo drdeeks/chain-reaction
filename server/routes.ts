@@ -2,7 +2,8 @@ import type { Express } from "express";
 import type { Server } from "http";
 import { storage } from "./storage";
 import { api, buildUrl } from "@shared/routes";
-import { validateChain, canFormCompound } from "@shared/chainLogic"; // BUG FIX #9: Import canFormCompound
+import { validateChain, canFormCompound } from "@shared/chainLogic";
+import { isValidWord } from "@shared/wordbank"; // BUG FIX #30
 
 export async function registerRoutes(
   httpServer: Server,
@@ -23,6 +24,14 @@ export async function registerRoutes(
   app.post(api.puzzles.create.path, async (req, res) => {
     try {
       const body = api.puzzles.create.body.parse(req.body);
+      
+      // BUG FIX #30: Validate all words are in word bank
+      const invalidWords = body.chain.filter(word => !isValidWord(word));
+      if (invalidWords.length > 0) {
+        return res.status(400).json({ 
+          message: `Invalid words not in word bank: ${invalidWords.join(', ')}` 
+        });
+      }
       
       if (!validateChain(body.chain)) {
         return res.status(400).json({ 
@@ -102,7 +111,8 @@ export async function registerRoutes(
   app.post(api.share.generate.path, async (req, res) => {
     try {
       const body = api.share.generate.body.parse(req.body);
-      const baseUrl = `${req.protocol}://${req.get('host')}`;
+      // BUG FIX #23: Use environment variable instead of req.get('host')
+      const baseUrl = process.env.BASE_URL || `${req.protocol}://${req.get('host')}`;
       const shareUrl = `${baseUrl}/?puzzle=${body.puzzleId}`;
       const shareText = `I completed Chain Reaction puzzle #${body.puzzleId} in ${Math.floor(body.completionTime / 1000)}s with ${body.hintsUsed} hints! Can you beat my score?`;
       

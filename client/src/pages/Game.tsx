@@ -20,6 +20,7 @@ export default function Game() {
   const [hintsUsed, setHintsUsed] = useState(0);
   const [startTime, setStartTime] = useState<number>(Date.now());
   const [completionTime, setCompletionTime] = useState<number>(0);
+  const [confettiFired, setConfettiFired] = useState(false); // BUG FIX #27: Track confetti state
   const { toast } = useToast();
   const submitScore = useSubmitScore();
   const generateShare = useGenerateShare();
@@ -34,12 +35,14 @@ export default function Game() {
     setHintsUsed(0);
     setStartTime(Date.now());
     setCompletionTime(0);
+    setConfettiFired(false); // BUG FIX #27: Reset confetti state
   }, [currentPuzzleIndex]);
 
   useEffect(() => {
-    if (isGameWon && puzzle) {
+    if (isGameWon && puzzle && !confettiFired) { // BUG FIX #27: Only fire once
       const time = Date.now() - startTime;
       setCompletionTime(time);
+      setConfettiFired(true);
       canvasConfetti({
         particleCount: 100,
         spread: 60,
@@ -47,7 +50,7 @@ export default function Game() {
         colors: ['#A78BFA', '#2DD4BF', '#F472B6']
       });
     }
-  }, [isGameWon, puzzle, startTime]);
+  }, [isGameWon, puzzle, startTime, confettiFired]);
 
   const handleGuess = (guess: string) => {
     if (!puzzle) return;
@@ -197,11 +200,12 @@ export default function Game() {
           >
             <Button
               onClick={handleShare}
+              disabled={generateShare.isPending} // BUG FIX #28: Show loading state
               variant="outline"
               className="border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/10"
             >
               <Share2 className="w-4 h-4 mr-2" />
-              Share Result
+              {generateShare.isPending ? 'Sharing...' : 'Share Result'}
             </Button>
           </motion.div>
         )}

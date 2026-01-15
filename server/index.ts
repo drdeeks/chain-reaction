@@ -2,6 +2,7 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
+import { pool } from "./db"; // BUG FIX #18: Import pool for cleanup
 
 const app = express();
 const httpServer = createServer(app);
@@ -62,12 +63,15 @@ app.use((req, res, next) => {
 (async () => {
   await registerRoutes(httpServer, app);
 
-  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+  // BUG FIX #19: Don't throw after sending response
+  app.use((err: any, _req: Request, res: Response, next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
 
-    res.status(status).json({ message });
-    throw err;
+    if (!res.headersSent) {
+      res.status(status).json({ message });
+    }
+    log(`Error: ${message}`, "error");
   });
 
   // importantly only setup vite in development and after
@@ -95,4 +99,17 @@ app.use((req, res, next) => {
       log(`serving on port ${port}`);
     },
   );
+  
+  // BUG FIX #18: Graceful shutdown
+  const shutdown = async () => {
+    log("Shutting down gracefully...");
+    await pool.end();
+    httpServer.close(() => {
+      log("Server closed");
+      process.exit(0);
+    });
+  };
+  
+  process.on('SIGTERM', shutdown);
+  process.on('SIGINT', shutdown);
 })();

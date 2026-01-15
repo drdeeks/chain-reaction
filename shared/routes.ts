@@ -35,8 +35,8 @@ export const api = {
       path: '/api/puzzles',
       body: z.object({
         difficulty: z.enum(['Easy', 'Medium', 'Hard']),
-        chain: z.array(z.string()).min(3).max(10),
-        hints: z.array(z.string()),
+        chain: z.array(z.string().trim()).min(3).max(10), // BUG FIX #22: Trim whitespace
+        hints: z.array(z.string().trim()),
         createdBy: z.string().optional(),
       }),
       responses: {
@@ -86,10 +86,10 @@ export const api = {
       method: 'POST' as const,
       path: '/api/leaderboard',
       body: z.object({
-        playerName: z.string().min(1).max(50),
-        puzzleId: z.number(),
-        completionTime: z.number(),
-        hintsUsed: z.number(),
+        playerName: z.string().min(1).max(50).transform(s => s.trim().replace(/[<>]/g, '')), // BUG FIX #14: Sanitize HTML
+        puzzleId: z.number().positive(),
+        completionTime: z.number().min(1), // BUG FIX #16: Must be positive
+        hintsUsed: z.number().min(0), // BUG FIX #17: Can't be negative
       }),
       responses: {
         201: z.object({
@@ -126,10 +126,16 @@ export function buildUrl(path: string, params?: Record<string, string | number>)
   let url = path;
   if (params) {
     Object.entries(params).forEach(([key, value]) => {
-      if (url.includes(`:${key}`)) {
-        url = url.replace(`:${key}`, String(value));
+      const placeholder = `:${key}`;
+      if (url.includes(placeholder)) {
+        url = url.replace(placeholder, String(value));
       }
     });
+    
+    // BUG FIX #29: Check if any placeholders remain
+    if (url.includes(':')) {
+      throw new Error(`Missing required URL parameter in: ${url}`);
+    }
   }
   return url;
 }
