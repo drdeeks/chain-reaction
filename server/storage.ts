@@ -29,7 +29,9 @@ export class DatabaseStorage implements IStorage {
   }
 
   async submitScore(entry: InsertLeaderboardEntry): Promise<LeaderboardEntry> {
-    const score = Math.max(0, 10000 - (entry.completionTime * 10) - (entry.hintsUsed * 500));
+    // BUG FIX #7: Convert milliseconds to seconds for score calculation
+    const timeInSeconds = Math.floor(entry.completionTime / 1000);
+    const score = Math.max(0, 10000 - (timeInSeconds * 10) - (entry.hintsUsed * 500));
     const [result] = await db
       .insert(leaderboard)
       .values({ ...entry, score })

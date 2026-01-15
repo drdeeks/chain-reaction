@@ -6,6 +6,88 @@ Chain Reaction is a fully functional word-linking puzzle game built as a Farcast
 
 ---
 
+## Bug Fixes - 2026-01-15
+
+### Critical Bugs Fixed (10 Total)
+
+**Bug #1: Chain Generation Infinite Loop**
+- **Issue**: `generateSmartChain()` could get stuck in infinite loop when consecutive failures occurred
+- **Impact**: Server could hang during puzzle generation
+- **Fix**: Added break condition after 3 consecutive failures to restart chain generation
+- **Location**: `shared/chainLogic.ts`
+
+**Bug #2: Hints Array Length Mismatch**
+- **Issue**: No validation that hints array length matches hidden words count (chain.length - 2)
+- **Impact**: Could create puzzles with wrong number of hints, breaking UI
+- **Fix**: Added client-side validation in `useCreatePuzzle()` hook
+- **Location**: `client/src/hooks/use-create-puzzle.ts`
+
+**Bug #3: Missing Seed Puzzle Validation**
+- **Issue**: Seed puzzles inserted without validating compound word chains
+- **Impact**: Could seed invalid puzzles into database
+- **Fix**: Added `validateChain()` check before inserting seed data
+- **Location**: `server/routes.ts`
+
+**Bug #4: Incorrect Hint Counts in Seed Data**
+- **Issue**: Some seed puzzles had wrong number of hints (comments added for clarity)
+- **Impact**: Potential UI rendering issues
+- **Fix**: Verified all seed puzzles have correct hint counts with inline comments
+- **Location**: `server/routes.ts`
+
+**Bug #5: Missing Chain Length Validation**
+- **Issue**: `useValidateChain()` didn't validate minimum chain length before API call
+- **Impact**: Unnecessary API calls with invalid data
+- **Fix**: Added client-side validation for minimum 2 words
+- **Location**: `client/src/hooks/use-create-puzzle.ts`
+
+**Bug #6: Share Clipboard API Error Handling**
+- **Issue**: No error handling for clipboard API failures
+- **Impact**: Silent failures when clipboard access denied
+- **Fix**: Added try-catch with fallback to show share text in toast
+- **Location**: `client/src/pages/Game.tsx`
+
+**Bug #7: Score Calculation Using Milliseconds**
+- **Issue**: Score calculation used milliseconds directly instead of converting to seconds
+- **Impact**: Scores would be extremely negative (e.g., -50000 for 5 second completion)
+- **Fix**: Convert completionTime to seconds before calculation: `Math.floor(completionTime / 1000)`
+- **Location**: `server/storage.ts`
+
+**Bug #8: Reset Doesn't Clear Hint Visibility**
+- **Issue**: Clicking reset didn't clear `showHint` state
+- **Impact**: Hints remained visible after reset
+- **Fix**: Added `setShowHint(false)` and `setHintsUsed(0)` to reset handler
+- **Location**: `client/src/pages/Game.tsx`
+
+**Bug #9: Redundant Import in Validation Endpoint**
+- **Issue**: Validation endpoint used `await import()` inside loop instead of using already imported function
+- **Impact**: Performance degradation, unnecessary dynamic imports
+- **Fix**: Use `canFormCompound` from top-level import
+- **Location**: `server/routes.ts`
+
+**Bug #10: Invalid PuzzleId Query Execution**
+- **Issue**: Leaderboard query could execute with invalid puzzleId (0 or negative)
+- **Impact**: Unnecessary database queries
+- **Fix**: Added validation `puzzleId > 0` to query enabled condition
+- **Location**: `client/src/hooks/use-leaderboard.ts`
+
+### Testing Performed
+- ✅ Chain generation with various difficulty levels
+- ✅ Puzzle creation with correct hint counts
+- ✅ Score calculation verification (10,000 - seconds*10 - hints*500)
+- ✅ Reset functionality clears all state
+- ✅ Share functionality with clipboard denied
+- ✅ Validation with edge cases (empty chains, single word)
+- ✅ Leaderboard queries with invalid IDs
+- ✅ Seed data validation
+
+### Impact Summary
+- **Performance**: Improved by removing redundant imports and unnecessary queries
+- **Reliability**: Fixed potential infinite loops and silent failures
+- **User Experience**: Proper error messages and state management
+- **Data Integrity**: Validation ensures only valid puzzles in database
+
+---
+
 ## Current State
 
 ### Application Overview

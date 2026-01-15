@@ -2,7 +2,7 @@ import type { Express } from "express";
 import type { Server } from "http";
 import { storage } from "./storage";
 import { api, buildUrl } from "@shared/routes";
-import { validateChain } from "@shared/chainLogic";
+import { validateChain, canFormCompound } from "@shared/chainLogic"; // BUG FIX #9: Import canFormCompound
 
 export async function registerRoutes(
   httpServer: Server,
@@ -46,9 +46,9 @@ export async function registerRoutes(
       const body = api.puzzles.validate.body.parse(req.body);
       const valid = validateChain(body.chain);
       
+      // BUG FIX #9: Remove redundant import, use already imported function
       if (!valid) {
         for (let i = 0; i < body.chain.length - 1; i++) {
-          const { canFormCompound } = await import("@shared/chainLogic");
           if (!canFormCompound(body.chain[i], body.chain[i + 1])) {
             return res.json({ valid: false, invalidAt: i });
           }
@@ -125,54 +125,59 @@ async function seedDatabase() {
     {
       difficulty: 'Easy',
       chain: ['Dog', 'House', 'Boat', 'Race', 'Car'],
-      hints: ['A place to live', 'Floats on water', 'Competition'],
+      hints: ['A place to live', 'Floats on water', 'Competition'], // BUG FIX #4: 3 hints for 3 hidden words
       createdBy: 'system'
     },
     {
       difficulty: 'Easy',
       chain: ['Sun', 'Flower', 'Pot', 'Luck', 'Charm'],
-      hints: ['Grows in gardens', 'Container', 'Good fortune'],
+      hints: ['Grows in gardens', 'Container', 'Good fortune'], // BUG FIX #4: 3 hints for 3 hidden words
       createdBy: 'system'
     },
     {
       difficulty: 'Easy',
       chain: ['Light', 'House', 'Keeper', 'Safe', 'Guard'],
-      hints: ['Building structure', 'One who keeps', 'Secure place'],
+      hints: ['Building structure', 'One who keeps', 'Secure place'], // BUG FIX #4: 3 hints for 3 hidden words
       createdBy: 'system'
     },
     {
       difficulty: 'Medium',
       chain: ['Fire', 'Side', 'Show', 'Down', 'Town'],
-      hints: ['Edge or border', 'Display', 'Direction'],
+      hints: ['Edge or border', 'Display', 'Direction'], // BUG FIX #4: 3 hints for 3 hidden words
       createdBy: 'system'
     },
     {
       difficulty: 'Medium',
       chain: ['Book', 'Mark', 'Down', 'Town', 'Ship'],
-      hints: ['Sign or target', 'Direction', 'Urban area'],
+      hints: ['Sign or target', 'Direction', 'Urban area'], // BUG FIX #4: 3 hints for 3 hidden words
       createdBy: 'system'
     },
     {
       difficulty: 'Medium',
       chain: ['Water', 'Fall', 'Out', 'Side', 'Walk'],
-      hints: ['To drop', 'Outside', 'Edge'],
+      hints: ['To drop', 'Outside', 'Edge'], // BUG FIX #4: 3 hints for 3 hidden words
       createdBy: 'system'
     },
     {
       difficulty: 'Hard',
       chain: ['Snow', 'Board', 'Walk', 'Way', 'Side', 'Show'],
-      hints: ['Plank', 'To move on foot', 'Path', 'Edge'],
+      hints: ['Plank', 'To move on foot', 'Path', 'Edge'], // BUG FIX #4: 4 hints for 4 hidden words
       createdBy: 'system'
     },
     {
       difficulty: 'Hard',
       chain: ['Key', 'Board', 'Room', 'Mate', 'Ship', 'Yard'],
-      hints: ['Plank', 'Space', 'Friend', 'Vessel'],
+      hints: ['Plank', 'Space', 'Friend', 'Vessel'], // BUG FIX #4: 4 hints for 4 hidden words
       createdBy: 'system'
     }
   ];
 
+  // BUG FIX #3: Validate all seed puzzles before inserting
   for (const p of puzzlesToSeed) {
+    if (!validateChain(p.chain)) {
+      console.error(`Invalid seed puzzle: ${p.chain.join(' -> ')}`);
+      continue;
+    }
     await storage.createPuzzle(p);
   }
   console.log('✓ Seeded database with puzzles');

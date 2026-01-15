@@ -116,6 +116,8 @@ export function generateSmartChain(length: number, difficulty: 'Easy' | 'Medium'
       
       if (validNext.length === 0) {
         consecutiveFailures++;
+        // BUG FIX #1: Break and restart chain if stuck
+        if (consecutiveFailures >= 3) break;
         continue;
       }
       

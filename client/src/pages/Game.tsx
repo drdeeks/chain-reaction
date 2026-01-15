@@ -88,14 +88,28 @@ export default function Game() {
           url: result.shareUrl,
         });
       } else {
-        await navigator.clipboard.writeText(`${result.shareText}\n${result.shareUrl}`);
-        toast({
-          title: "Copied to clipboard!",
-          description: "Share your score with friends",
-        });
+        // BUG FIX #6: Handle clipboard API errors
+        try {
+          await navigator.clipboard.writeText(`${result.shareText}\n${result.shareUrl}`);
+          toast({
+            title: "Copied to clipboard!",
+            description: "Share your score with friends",
+          });
+        } catch (clipboardError) {
+          // Fallback: show share text in toast
+          toast({
+            title: "Share your score",
+            description: result.shareText,
+            duration: 5000,
+          });
+        }
       }
     } catch (error) {
-      console.error('Share failed:', error);
+      toast({
+        variant: "destructive",
+        title: "Share failed",
+        description: "Unable to share at this time",
+      });
     }
   };
 
@@ -203,6 +217,8 @@ export default function Game() {
           onReset={() => {
             setCurrentStep(1);
             setInputValue("");
+            setShowHint(false); // BUG FIX #8: Clear hint visibility on reset
+            setHintsUsed(0);
             setStartTime(Date.now());
           }}
           hintsUsed={hintsUsed}
