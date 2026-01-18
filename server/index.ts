@@ -2,7 +2,7 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
-import { pool } from "./db"; // BUG FIX #18: Import pool for cleanup
+import { getPool } from "./db"; // BUG FIX #18: Import pool for cleanup
 
 const app = express();
 const httpServer = createServer(app);
@@ -103,7 +103,10 @@ app.use((req, res, next) => {
   // BUG FIX #18: Graceful shutdown
   const shutdown = async () => {
     log("Shutting down gracefully...");
-    await pool.end();
+    const pool = getPool();
+    if (pool) {
+      await pool.end();
+    }
     httpServer.close(() => {
       log("Server closed");
       process.exit(0);
@@ -112,4 +115,11 @@ app.use((req, res, next) => {
   
   process.on('SIGTERM', shutdown);
   process.on('SIGINT', shutdown);
+  
+  // Log storage mode
+  if (!process.env.DATABASE_URL) {
+    log("⚠️  Running in MOCK mode (no DATABASE_URL set). Data will not persist.", "warn");
+  } else {
+    log("✓ Database connection available", "info");
+  }
 })();
