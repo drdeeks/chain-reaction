@@ -1,0 +1,29 @@
+{
+  "miniapp": {
+    "version": "1",
+    "name": "Chain Reaction",
+    "iconUrl": "https://chain-reaction-silk.vercel.app/favicon.png",
+    "homeUrl": "https://chain-reaction-silk.vercel.app/",
+    "imageUrl": "https://chain-reaction-silk.vercel.app/og-image.png",
+    "buttonTitle": "Play Chain Reaction",
+    "splashImageUrl": "https://chain-reaction-silk.vercel.app/splash.png",
+    "splashBackgroundColor": "#0f172a",
+    "subtitle": "Word linking puzzle game",
+    "description": "Word linking puzzle game using paint color names – connect shades, discover chains, and paint your way to victory!",
+    ],
+    "primaryCategory": "games",
+    "tags": [
+      "puzzle",
+      "word-game",
+      "colors",
+      "logic",
+      "paint",
+      "minimalist"
+    ],
+    "heroImageUrl": "https://chain-reaction-silk.vercel.app/hero.png",
+    "tagline": "Connect colors. Spark reactions.",
+    "ogTitle": "Chain Reaction – Color Word Puzzle Game",
+    "ogDescription": "Link paint color names in clever chains. A relaxing yet addictive word puzzle with beautiful color aesthetics.",
+    "ogImageUrl": "https://chain-reaction-silk.vercel.app/og-image.png"
+  }
+}
