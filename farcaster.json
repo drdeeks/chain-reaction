@@ -1,8 +1,3 @@
-{
-  "accountAssociation": {
-    "header": "eyJmaWQiOjExMDQ5MTgsInR5cGUiOiJhdXRoIiwia2V5IjoiMHgxMkYxQjM4REMzNUFBNjVCNTBFNTg0OWQwMjU1OTA3ODk1M2FFMjRiIn0",
-    "payload": "eyJkb21haW4iOiJ5b3VyLWRvbWFpbi5jb20ifQ",
-    "signature": "GENERATE_THIS_WITH_THE_OFFICIAL_TOOL"
   },
   "miniapp": {
     "version": "1",
