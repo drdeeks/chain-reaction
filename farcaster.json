@@ -1,19 +1,18 @@
-},
-  "miniapp": {
-    "version": "1",
-    "name": "Chain Reaction",
-    "iconUrl": "https://your-domain.com/favicon.png",
-    "homeUrl": "https://your-domain.com/",
-    "imageUrl": "https://your-domain.com/og-image.png",
-    "buttonTitle": "Play Chain Reaction",
-    "splashImageUrl": "https://your-domain.com/splash.png",
-    "splashBackgroundColor": "#0f172a",
-    "description": "Word linking puzzle game using paint color names",
-    "primaryCategory": "games",
-    "tags": [
-      "puzzle",
-      "word-game",
-      "colors"
-    ]
-  }
 }
+"miniapp": {
+   "version": "1",
+   "name": "Chain Reaction",
+   "iconUrl": "https://your-domain.com/favicon.png",
+   "homeUrl": "https://your-domain.com/",
+   "imageUrl": "https://your-domain.com/og-image.png",
+   "buttonTitle": "Play Chain Reaction",
+   "splashImageUrl": "https://your-domain.com/splash.png",
+   "splashBackgroundColor": "#0f172a",
+   "description": "Word linking puzzle game using paint color names",
+   "primaryCategory": "games",
+   "tags": [
+     "puzzle",
+     "word-game",
+     "colors"
+   ]
+ }
