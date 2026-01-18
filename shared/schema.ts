@@ -27,7 +27,7 @@ export const leaderboard = pgTable("leaderboard", {
 }));
 
 export const insertPuzzleSchema = createInsertSchema(puzzles).omit({ id: true, createdAt: true });
-export const insertLeaderboardSchema = createInsertSchema(leaderboard).omit({ id: true, createdAt: true });
+export const insertLeaderboardSchema = createInsertSchema(leaderboard).omit({ id: true, createdAt: true, score: true });
 
 export type Puzzle = typeof puzzles.$inferSelect;
 export type InsertPuzzle = z.infer<typeof insertPuzzleSchema>;

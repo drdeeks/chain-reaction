@@ -128,6 +128,11 @@ export async function registerRoutes(
 }
 
 async function seedDatabase() {
+  // Skip seeding if using mock storage (it already has seed data)
+  if (!process.env.DATABASE_URL) {
+    return;
+  }
+  
   const existing = await storage.getPuzzles();
   if (existing.length > 0) return;
 

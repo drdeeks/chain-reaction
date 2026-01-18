@@ -32,19 +32,25 @@ Chain Reaction challenges players to find missing words that connect a chain thr
 ## 🚀 Quick Start
 
 ```bash
-# Install dependencies
+# 1. Install dependencies
 npm install
 
-# Setup database
+# 2. Set up environment variables
+cp .env.example .env
+# Edit .env and add your DATABASE_URL (optional for development)
+
+# 3. Setup database (if using database)
 npm run db:push
 
-# Development
+# 4. Development
 npm run dev
 
-# Production build
+# 5. Production build
 npm run build
 npm start
 ```
+
+> **Note**: For detailed setup instructions, database options, and troubleshooting, see [`.env.example`](.env.example) file which contains a complete walkthrough.
 
 ## 📁 Project Structure
 

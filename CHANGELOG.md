@@ -6,6 +6,142 @@ Chain Reaction is a fully functional word-linking puzzle game built as a Farcast
 
 ---
 
+## Environment Setup - 2026-01-15
+
+### Created `.env.example` with Complete Setup Walkthrough
+- **New File**: `.env.example` with comprehensive environment variable documentation
+- **Includes**:
+  - All required environment variables with descriptions
+  - Quick start walkthrough (5 steps)
+  - Database setup options (5 different providers)
+  - Troubleshooting section for common issues
+  - Security best practices
+  - Examples for each variable
+
+### Environment Variables Documented
+- `DATABASE_URL` - PostgreSQL connection string (optional for dev, required for prod)
+- `PORT` - Server port (defaults to 5000)
+- `NODE_ENV` - Environment mode (development/production)
+- `BASE_URL` - Base URL for share links (optional, prevents host header spoofing)
+
+### Setup Options Covered
+1. **Development Without Database** - Quick start with mock storage
+2. **Development With Database** - Full testing setup
+3. **Production Deployment** - Production configuration
+4. **Database Providers**:
+   - Local PostgreSQL
+   - Supabase (free tier)
+   - Neon (free tier)
+   - Railway (free tier)
+   - Docker (local development)
+
+### Quick Start Instructions
+The file includes step-by-step instructions for:
+- Installing dependencies
+- Setting up environment variables
+- Choosing database option (or using mock storage)
+- Running the application
+- Deploying to production
+
+---
+
+## App Display Fix - 2026-01-15
+
+### Issue Resolved: App Not Displaying
+- **Root Cause**: App required `DATABASE_URL` environment variable to start, preventing development without database setup
+- **Solution**: Implemented lazy database connection and mock storage for development
+
+### Changes Made
+
+#### Database Connection Made Optional
+- **Updated `server/db.ts`**:
+  - Changed from immediate connection to lazy connection pattern
+  - Added `getDb()` and `getPool()` functions that return `null` if `DATABASE_URL` is not set
+  - Removed hard error on missing `DATABASE_URL` at module load time
+  - Database now only connects when actually needed
+
+#### Mock Storage Implementation
+- **Updated `server/storage.ts`**:
+  - Created `MockStorage` class implementing `IStorage` interface
+  - Provides in-memory storage with pre-seeded puzzle data (8 puzzles)
+  - Automatically used when `DATABASE_URL` is not set
+  - Supports all storage operations: getPuzzles, createPuzzle, getLeaderboard, submitScore
+  - Maintains same API contract as `DatabaseStorage`
+
+#### Server Startup Improvements
+- **Updated `server/index.ts`**:
+  - Added warning message when running in MOCK mode
+  - Updated graceful shutdown to handle missing database connection
+  - Server now starts successfully without database
+
+#### TypeScript Fixes
+- **Fixed `shared/schema.ts`**:
+  - Made `score` optional in `insertLeaderboardSchema` (calculated in storage layer)
+- **Fixed `server/storage.ts`**:
+  - Fixed `createdBy` type handling in mock storage (handles `null`/`undefined`)
+- **Fixed `shared/chainLogic.ts`**:
+  - Added explicit type annotation for `currentWord` variable
+
+#### Database Seeding
+- **Updated `server/routes.ts`**:
+  - Skip database seeding when using mock storage (already has seed data)
+
+### Result
+- ✅ App now starts successfully without `DATABASE_URL`
+- ✅ All TypeScript errors resolved
+- ✅ Mock storage provides 8 pre-seeded puzzles for development
+- ✅ Server runs in MOCK mode with clear warning message
+- ✅ Full functionality available for development/testing without database
+
+### Development Mode
+When `DATABASE_URL` is not set:
+- Server starts in MOCK mode
+- Warning message displayed: "⚠️ Running in MOCK mode (no DATABASE_URL set). Data will not persist."
+- 8 pre-seeded puzzles available immediately
+- All API endpoints functional with in-memory storage
+- Data resets on server restart
+
+---
+
+## Project Organization - 2026-01-15
+
+### File Tree Reorganization
+- **Created `docs/` directory** for consolidated documentation
+  - Moved `BUGFIXES.md` → `docs/BUGFIXES.md`
+  - Moved `BUGS_11-30.md` → `docs/BUGS_11-30.md`
+  - Moved `BUGS_31-40.md` → `docs/BUGS_31-40.md`
+  - Moved `GAMMA_REFACTOR.md` → `docs/GAMMA_REFACTOR.md`
+  - Moved `SUMMARY.md` → `docs/SUMMARY.md`
+  - Moved `client/requirements.md` → `docs/CLIENT_REQUIREMENTS.md`
+- **Rationale**: Centralized all informational and documentation files for better project organization and easier navigation
+
+### Git Configuration
+- **Created comprehensive `.gitignore` file**
+  - Dependencies: `node_modules/`, package manager caches
+  - Build outputs: `dist/`, `build/`, `.cache/`
+  - Environment variables: `.env*` files
+  - Logs: All log file patterns
+  - Testing: Coverage reports, `.vitest/`
+  - IDE/Editor files: `.vscode/`, `.idea/`, swap files
+  - OS files: `.DS_Store`, `Thumbs.db`, etc.
+  - TypeScript: `*.tsbuildinfo`
+  - Database: Local database files, `drizzle/`
+  - Temporary files: `*.tmp`, `*.temp`
+  - Vite: `.vite/` directory
+
+### Configuration Files
+- **Formatted `farcaster.json`**
+  - Ensured proper JSON formatting with consistent indentation
+  - Validated structure for Farcaster mini-app configuration
+  - All fields properly formatted and aligned
+
+### Documentation Updates
+- **Updated `CHANGELOG.md`** with this reorganization entry
+- All documentation files now consolidated in `docs/` directory
+- Maintained backward compatibility (no breaking changes to code)
+
+---
+
 ## Bug Fixes - 2026-01-15
 
 ### Round 3: Additional 10 Bugs (31-40)

@@ -108,7 +108,7 @@ export function generateSmartChain(length: number, difficulty: 'Easy' | 'Medium'
     const startWord = PAINT_COLORS[Math.floor(Math.random() * PAINT_COLORS.length)];
     chain.push(startWord);
     
-    let currentWord = startWord;
+    let currentWord: string = startWord;
     let consecutiveFailures = 0;
     
     while (chain.length < length && consecutiveFailures < 10) {
