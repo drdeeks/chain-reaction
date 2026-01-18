@@ -1,0 +1,24 @@
+{
+  "accountAssociation": {
+    "header": "eyJmaWQiOjExMDQ5MTgsInR5cGUiOiJhdXRoIiwia2V5IjoiMHgxMkYxQjM4REMzNUFBNjVCNTBFNTg0OWQwMjU1OTA3ODk1M2FFMjRiIn0",
+    "payload": "eyJkb21haW4iOiJ5b3VyLWRvbWFpbi5jb20ifQ",
+    "signature": "GENERATE_THIS_WITH_THE_OFFICIAL_TOOL"
+  },
+  "miniapp": {
+    "version": "1",
+    "name": "Chain Reaction",
+    "iconUrl": "https://chain-reaction-silk.vercel.app/favicon.png",
+    "homeUrl": "https://chain-reaction-silk.vercel.app/",
+    "imageUrl": "https://chain-reaction-silk.vercel.app/og-image.png",
+    "buttonTitle": "Play Chain Reaction",
+    "splashImageUrl": "https://chain-reaction-silk.vercel.app/splash.png",
+    "splashBackgroundColor": "#0f172a",
+    "description": "Word linking puzzle game using paint color names",
+    "primaryCategory": "games",
+    "tags": [
+      "puzzle",
+      "word-game",
+      "colors"
+    ]
+  }
+}
