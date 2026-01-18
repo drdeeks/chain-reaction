@@ -10,15 +10,17 @@
     "splashBackgroundColor": "#0f172a",
     "subtitle": "Word linking puzzle game",
     "description": "Word linking puzzle game using paint color names – connect shades, discover chains, and paint your way to victory!",
+    "screenshotUrls": [
+      "https://chain-reaction-silk.vercel.app/screenshots/1.png",
+      "https://chain-reaction-silk.vercel.app/screenshots/2.png"
     ],
     "primaryCategory": "games",
     "tags": [
       "puzzle",
       "word-game",
       "colors",
-      "logic",
-      "paint",
-      "minimalist"
+      "chain-reaction",
+      "logic"
     ],
     "heroImageUrl": "https://chain-reaction-silk.vercel.app/hero.png",
     "tagline": "Connect colors. Spark reactions.",
