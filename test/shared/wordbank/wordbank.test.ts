@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { isValidWord, getRandomWords, PAINT_COLORS } from '../shared/wordbank';
+import { isValidWord, getRandomWords, PAINT_COLORS } from '../../../shared/wordbank';
 
 describe('wordbank', () => {
   describe('PAINT_COLORS', () => {

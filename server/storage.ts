@@ -1,6 +1,6 @@
 import { getDb } from "./db";
 import { puzzles, leaderboard, type InsertPuzzle, type Puzzle, type LeaderboardEntry, type InsertLeaderboardEntry } from "@shared/schema";
-import { desc, eq, and } from "drizzle-orm"; // BUG FIX #34: Import 'and'
+import { desc, eq, and } from "drizzle-orm";
 
 export interface IStorage {
   getPuzzles(): Promise<Puzzle[]>;
@@ -38,7 +38,7 @@ export class DatabaseStorage implements IStorage {
     const db = getDb();
     if (!db) throw new Error("Database not available");
     
-    // BUG FIX #34: Check for duplicate submissions
+    // Check for duplicate submissions to prevent duplicates
     const existing = await db
       .select()
       .from(leaderboard)
@@ -55,7 +55,7 @@ export class DatabaseStorage implements IStorage {
       return existing[0];
     }
     
-    // BUG FIX #7: Convert milliseconds to seconds for score calculation
+    // Convert milliseconds to seconds for score calculation
     const timeInSeconds = Math.floor(entry.completionTime / 1000);
     const score = Math.max(0, 10000 - (timeInSeconds * 10) - (entry.hintsUsed * 500));
     const [result] = await db
@@ -171,7 +171,7 @@ export class MockStorage implements IStorage {
       return Promise.resolve(existing);
     }
     
-    // BUG FIX #7: Convert milliseconds to seconds for score calculation
+    // Convert milliseconds to seconds for score calculation
     const timeInSeconds = Math.floor(entry.completionTime / 1000);
     const score = Math.max(0, 10000 - (timeInSeconds * 10) - (entry.hintsUsed * 500));
     

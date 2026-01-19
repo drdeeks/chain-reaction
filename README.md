@@ -56,16 +56,23 @@ npm start
 
 ```
 chain-reaction/
-├── client/                 # React frontend
+├── app/                   # React frontend (Farcaster mini-app)
 │   ├── src/
 │   │   ├── components/    # UI components
 │   │   ├── hooks/         # Custom React hooks
 │   │   ├── pages/         # Route pages
 │   │   └── lib/           # Utilities
 │   └── index.html         # Entry point with Farcaster meta tags
-├── server/                # Express backend
-│   ├── routes.ts          # API endpoints
+├── api/                   # API routes (Farcaster mini-app structure)
+│   ├── puzzles.ts         # Puzzle endpoints
+│   ├── leaderboard.ts     # Leaderboard endpoints
+│   ├── share.ts           # Share endpoints
+│   └── index.ts           # Route registration
+├── server/                # Express server setup
+│   ├── db.ts              # Database connection
 │   ├── storage.ts         # Database layer
+│   ├── static.ts          # Static file serving
+│   ├── vite.ts            # Vite dev server setup
 │   └── index.ts           # Server entry
 ├── shared/                # Shared code
 │   ├── wordbank.ts        # 600+ paint color names
@@ -146,6 +153,142 @@ npm run db:push
 npm run build
 ```
 
+## 🧪 Testing
+
+Chain Reaction includes a comprehensive enterprise-grade test suite with high coverage across all layers of the application.
+
+### Test Structure
+
+The test suite is organized by application layer:
+
+```
+test/
+├── frontend/              # Frontend tests
+│   ├── components/        # React component tests
+│   ├── hooks/            # Custom hook tests
+│   ├── pages/            # Page component tests
+│   └── lib/              # Utility function tests
+├── backend/              # Backend tests
+│   ├── api/              # API route tests
+│   ├── server/           # Server configuration tests
+│   └── storage/          # Database layer tests
+├── shared/               # Shared code tests
+│   ├── chainLogic/       # Chain validation tests
+│   ├── wordbank/         # Word bank tests
+│   ├── routes/           # API contract tests
+│   └── schema/           # Database schema tests
+└── integration/          # Integration tests
+    ├── frontend/         # Frontend integration tests
+    └── backend/          # Backend integration tests
+```
+
+### Running Tests
+
+```bash
+# Run all tests
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Run tests with coverage report
+npm run test:coverage
+
+# Run specific test file
+npm test test/frontend/components/GameControls.test.tsx
+
+# Run tests matching pattern
+npm test -- --grep "API"
+```
+
+### Test Coverage
+
+The test suite maintains high coverage standards:
+
+- **Lines**: 80% minimum
+- **Functions**: 80% minimum
+- **Branches**: 75% minimum
+- **Statements**: 80% minimum
+
+Coverage reports are generated in the `coverage/` directory with HTML, JSON, and LCOV formats.
+
+### Test Types
+
+#### Unit Tests
+- **Frontend Components**: Test React components in isolation
+- **Hooks**: Test custom React hooks with QueryClient mocking
+- **API Routes**: Test Express routes with mocked storage layer
+- **Shared Logic**: Test pure functions and utilities
+
+#### Integration Tests
+- **API Integration**: Test complete API workflows
+- **Game Flow**: Test end-to-end user interactions
+- **Data Flow**: Test data transformations across layers
+
+#### Test Utilities
+
+The test suite includes:
+
+- **React Testing Library**: Component rendering and interaction
+- **Vitest**: Fast test runner with ESM support
+- **Supertest**: HTTP assertion library for API testing
+- **Mock Service Worker**: API mocking (when needed)
+
+### Writing Tests
+
+#### Component Test Example
+
+```typescript
+import { describe, it, expect } from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/react';
+import { GameControls } from '@/components/GameControls';
+
+describe('GameControls', () => {
+  it('should call onGuess when form is submitted', () => {
+    const onGuess = vi.fn();
+    render(<GameControls onGuess={onGuess} {...props} />);
+    
+    const input = screen.getByPlaceholderText(/enter word/i);
+    fireEvent.change(input, { target: { value: 'House' } });
+    fireEvent.submit(input.closest('form')!);
+    
+    expect(onGuess).toHaveBeenCalledWith('House');
+  });
+});
+```
+
+#### API Test Example
+
+```typescript
+import { describe, it, expect } from 'vitest';
+import request from 'supertest';
+import express from 'express';
+import { registerPuzzleRoutes } from '@/api/puzzles';
+
+describe('Puzzles API', () => {
+  it('should return all puzzles', async () => {
+    const app = express();
+    app.use(express.json());
+    registerPuzzleRoutes(app);
+    
+    const response = await request(app).get('/api/puzzles');
+    
+    expect(response.status).toBe(200);
+    expect(Array.isArray(response.body)).toBe(true);
+  });
+});
+```
+
+### Continuous Integration
+
+Tests are designed to run in CI/CD pipelines:
+
+- Fast execution (< 30 seconds for full suite)
+- Deterministic results (no flaky tests)
+- Clear error messages
+- Coverage reporting
+- Parallel execution support
+
 ## 📊 Scoring System
 
 ```
@@ -162,7 +305,17 @@ Score = 10,000 - (completionTime * 10) - (hintsUsed * 500)
 2. Create a feature branch
 3. Make your changes
 4. Ensure all types pass: `npm run check`
-5. Submit a pull request
+5. Write tests for new features
+6. Ensure all tests pass: `npm test`
+7. Ensure coverage thresholds are met: `npm run test:coverage`
+8. Submit a pull request
+
+### Testing Requirements
+
+- All new features must include tests
+- Test coverage must not decrease
+- All tests must pass before merging
+- Integration tests required for new API endpoints
 
 ## 📝 License
 

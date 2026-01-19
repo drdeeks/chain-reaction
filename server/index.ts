@@ -1,8 +1,8 @@
 import express, { type Request, Response, NextFunction } from "express";
-import { registerRoutes } from "./routes";
+import { registerRoutes } from "../api";
 import { serveStatic } from "./static";
 import { createServer } from "http";
-import { getPool } from "./db"; // BUG FIX #18: Import pool for cleanup
+import { getPool } from "./db";
 
 const app = express();
 const httpServer = createServer(app);
@@ -61,9 +61,9 @@ app.use((req, res, next) => {
 });
 
 (async () => {
-  await registerRoutes(httpServer, app);
+  await registerRoutes(app);
 
-  // BUG FIX #19: Don't throw after sending response
+  // Error handler: don't throw after response is sent
   app.use((err: any, _req: Request, res: Response, next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
@@ -100,7 +100,7 @@ app.use((req, res, next) => {
     },
   );
   
-  // BUG FIX #18: Graceful shutdown
+  // Graceful shutdown: close database pool and HTTP server
   const shutdown = async () => {
     log("Shutting down gracefully...");
     const pool = getPool();
