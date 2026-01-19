@@ -1,7 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "../api";
 import { serveStatic } from "./static";
-import { createServer } from "http";
+
 import { getPool } from "./db";
 
 const app = express();
@@ -60,7 +60,6 @@ app.use((req, res, next) => {
   next();
 });
 
-(async () => {
   await registerRoutes(app);
 
   // Error handler: don't throw after response is sent
@@ -81,7 +80,7 @@ app.use((req, res, next) => {
     serveStatic(app);
   } else {
     const { setupVite } = await import("./vite");
-    await setupVite(httpServer, app);
+    await setupVite(app); // removed httpServer
   }
 
 
