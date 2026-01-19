@@ -17,10 +17,6 @@
     {
       "src": "/api/(.*)",
       "dest": "dist/index.cjs"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
     }
   ]
 }
