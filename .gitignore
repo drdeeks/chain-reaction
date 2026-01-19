@@ -83,3 +83,4 @@ pnpm-lock.yaml
 *.key
 *.cert
 .cache/
+.vercel

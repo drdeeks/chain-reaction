@@ -10,7 +10,7 @@ export function useLeaderboard(puzzleId: number) {
       if (!res.ok) throw new Error('Failed to fetch leaderboard');
       return res.json();
     },
-    enabled: !!puzzleId && puzzleId > 0, // BUG FIX #10: Validate puzzleId is positive
+    enabled: !!puzzleId && puzzleId > 0,
   });
 }
 

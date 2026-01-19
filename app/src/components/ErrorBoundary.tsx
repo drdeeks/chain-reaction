@@ -10,7 +10,7 @@ interface State {
   error?: Error;
 }
 
-// BUG FIX #35: Add Error Boundary
+// Error Boundary component for catching React errors
 export class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
     super(props);

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { ChainNode } from '../client/src/components/ChainNode';
+import { ChainNode } from '../../../app/src/components/ChainNode';
 
 describe('ChainNode', () => {
   it('should render completed state', () => {

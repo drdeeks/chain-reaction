@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { canFormCompound, validateChain, generateHint, findValidNextWords } from '../shared/chainLogic';
+import { canFormCompound, validateChain, generateHint, findValidNextWords } from '../../../shared/chainLogic';
 
 describe('chainLogic', () => {
   describe('canFormCompound', () => {

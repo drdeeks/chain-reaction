@@ -4,7 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./lib/queryClient";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { ErrorBoundary } from "@/components/ErrorBoundary"; // BUG FIX #35
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 const Game = lazy(() => import("@/pages/Game"));
 const NotFound = lazy(() => import("@/pages/not-found"));
@@ -30,7 +30,7 @@ function Router() {
 
 function App() {
   return (
-    <ErrorBoundary> {/* BUG FIX #35: Wrap app in error boundary */}
+    <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
           <Toaster />

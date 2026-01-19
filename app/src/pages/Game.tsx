@@ -20,7 +20,7 @@ export default function Game() {
   const [hintsUsed, setHintsUsed] = useState(0);
   const [startTime, setStartTime] = useState<number>(Date.now());
   const [completionTime, setCompletionTime] = useState<number>(0);
-  const [confettiFired, setConfettiFired] = useState(false); // BUG FIX #27: Track confetti state
+  const [confettiFired, setConfettiFired] = useState(false);
   const { toast } = useToast();
   const submitScore = useSubmitScore();
   const generateShare = useGenerateShare();
@@ -35,11 +35,11 @@ export default function Game() {
     setHintsUsed(0);
     setStartTime(Date.now());
     setCompletionTime(0);
-    setConfettiFired(false); // BUG FIX #27: Reset confetti state
+    setConfettiFired(false);
   }, [currentPuzzleIndex]);
 
   useEffect(() => {
-    if (isGameWon && puzzle && !confettiFired) { // BUG FIX #27: Only fire once
+    if (isGameWon && puzzle && !confettiFired) {
       const time = Date.now() - startTime;
       setCompletionTime(time);
       setConfettiFired(true);
@@ -91,7 +91,7 @@ export default function Game() {
           url: result.shareUrl,
         });
       } else {
-        // BUG FIX #6: Handle clipboard API errors
+        // Handle clipboard API errors gracefully
         try {
           await navigator.clipboard.writeText(`${result.shareText}\n${result.shareUrl}`);
           toast({
@@ -200,7 +200,7 @@ export default function Game() {
           >
             <Button
               onClick={handleShare}
-              disabled={generateShare.isPending} // BUG FIX #28: Show loading state
+              disabled={generateShare.isPending}
               variant="outline"
               className="border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/10"
             >
@@ -221,7 +221,7 @@ export default function Game() {
           onReset={() => {
             setCurrentStep(1);
             setInputValue("");
-            setShowHint(false); // BUG FIX #8: Clear hint visibility on reset
+            setShowHint(false);
             setHintsUsed(0);
             setStartTime(Date.now());
           }}

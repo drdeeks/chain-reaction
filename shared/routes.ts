@@ -36,7 +36,7 @@ export const api = {
       body: z.object({
         difficulty: z.enum(['Easy', 'Medium', 'Hard']),
         chain: z.array(z.string().trim()).min(3).max(10),
-        hints: z.array(z.string().trim()).min(1), // BUG FIX #38: At least one hint required
+        hints: z.array(z.string().trim()).min(1),
         createdBy: z.string().optional(),
       }),
       responses: {
@@ -132,7 +132,7 @@ export function buildUrl(path: string, params?: Record<string, string | number>)
       }
     });
     
-    // BUG FIX #29: Check if any placeholders remain
+    // Validate all placeholders were replaced
     if (url.includes(':')) {
       throw new Error(`Missing required URL parameter in: ${url}`);
     }

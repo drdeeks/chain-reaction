@@ -6,7 +6,7 @@ export function useCreatePuzzle() {
   
   return useMutation({
     mutationFn: async (data: { difficulty: 'Easy' | 'Medium' | 'Hard'; chain: string[]; hints: string[]; createdBy?: string }) => {
-      // BUG FIX #2: Validate hints array matches hidden words count
+      // Validate hints array matches hidden words count
       const hiddenWordsCount = data.chain.length - 2; // Exclude first and last
       if (data.hints.length !== hiddenWordsCount) {
         throw new Error(`Hints count (${data.hints.length}) must match hidden words count (${hiddenWordsCount})`);
@@ -32,7 +32,7 @@ export function useCreatePuzzle() {
 export function useValidateChain() {
   return useMutation({
     mutationFn: async (chain: string[]) => {
-      // BUG FIX #5: Validate chain has at least 2 words before sending
+      // Validate chain has at least 2 words
       if (!chain || chain.length < 2) {
         throw new Error('Chain must have at least 2 words');
       }
