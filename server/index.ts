@@ -93,4 +93,4 @@ app.use((req, res, next) => {
     log("✓ Database connection available", "info");
   }
 
-export default app;
+module.exports = app;
