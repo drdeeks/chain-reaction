@@ -2,9 +2,6 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "../api";
 import { serveStatic } from "./static";
 
-import { getPool } from "./db";
-
-const app = express();
 
 
 declare module "http" {
@@ -12,16 +9,6 @@ declare module "http" {
     rawBody: unknown;
   }
 }
-
-app.use(
-  express.json({
-    verify: (req, _res, buf) => {
-      req.rawBody = buf;
-    },
-  }),
-);
-
-app.use(express.urlencoded({ extended: false }));
 
 export function log(message: string, source = "express") {
   const formattedTime = new Date().toLocaleTimeString("en-US", {
@@ -31,36 +18,55 @@ export function log(message: string, source = "express") {
     hour12: true,
   });
 
-  console.log(`${formattedTime} [${source}] ${message}`);
-}
+    console.log(`${formattedTime} [${source}] ${message}`);
 
-app.use((req, res, next) => {
-  const start = Date.now();
-  const path = req.path;
-  let capturedJsonResponse: Record<string, any> | undefined = undefined;
+  }
 
-  const originalResJson = res.json;
-  res.json = function (bodyJson, ...args) {
-    capturedJsonResponse = bodyJson;
-    return originalResJson.apply(res, [bodyJson, ...args]);
-  };
+  
 
-  res.on("finish", () => {
-    const duration = Date.now() - start;
-    if (path.startsWith("/api")) {
-      let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
-      if (capturedJsonResponse) {
-        logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
+  const app = express();
+
+  
+
+  module.exports = async () => {
+
+  app.use(
+    express.json({
+      verify: (req, _res, buf) => {
+        req.rawBody = buf;
+      },
+    }),
+  );
+
+  app.use(express.urlencoded({ extended: false }));
+
+  app.use((req, res, next) => {
+    const start = Date.now();
+    const path = req.path;
+    let capturedJsonResponse: Record<string, any> | undefined = undefined;
+
+    const originalResJson = res.json;
+    res.json = function (bodyJson, ...args) {
+      capturedJsonResponse = bodyJson;
+      return originalResJson.apply(res, [bodyJson, ...args]);
+    };
+
+    res.on("finish", () => {
+      const duration = Date.now() - start;
+      if (path.startsWith("/api")) {
+        let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
+        if (capturedJsonResponse) {
+          logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
+        }
+
+        log(logLine);
       }
+    });
 
-      log(logLine);
-    }
+    next();
   });
 
-  next();
-});
-
-  await registerRoutes(app);
+  await registerRoutes(app); // This is now inside an async function
 
   // Error handler: don't throw after response is sent
   app.use((err: any, _req: Request, res: Response, next: NextFunction) => {
@@ -80,11 +86,9 @@ app.use((req, res, next) => {
     serveStatic(app);
   } else {
     const { setupVite } = await import("./vite");
-    await setupVite(app); // removed httpServer
+    await setupVite(app);
   }
 
-
-  
   // Log storage mode
   if (!process.env.DATABASE_URL) {
     log("⚠️  Running in MOCK mode (no DATABASE_URL set). Data will not persist.", "warn");
@@ -92,4 +96,5 @@ app.use((req, res, next) => {
     log("✓ Database connection available", "info");
   }
 
-module.exports = app;
+  return app;
+};
