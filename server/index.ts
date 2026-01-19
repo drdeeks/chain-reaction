@@ -5,7 +5,7 @@ import { createServer } from "http";
 import { getPool } from "./db";
 
 const app = express();
-const httpServer = createServer(app);
+
 
 declare module "http" {
   interface IncomingMessage {
@@ -84,37 +84,7 @@ app.use((req, res, next) => {
     await setupVite(httpServer, app);
   }
 
-  // ALWAYS serve the app on the port specified in the environment variable PORT
-  // Other ports are firewalled. Default to 5000 if not specified.
-  // this serves both the API and the client.
-  // It is the only port that is not firewalled.
-  const port = parseInt(process.env.PORT || "5000", 10);
-  httpServer.listen(
-    {
-      port,
-      host: "0.0.0.0",
-      reusePort: true,
-    },
-    () => {
-      log(`serving on port ${port}`);
-    },
-  );
-  
-  // Graceful shutdown: close database pool and HTTP server
-  const shutdown = async () => {
-    log("Shutting down gracefully...");
-    const pool = getPool();
-    if (pool) {
-      await pool.end();
-    }
-    httpServer.close(() => {
-      log("Server closed");
-      process.exit(0);
-    });
-  };
-  
-  process.on('SIGTERM', shutdown);
-  process.on('SIGINT', shutdown);
+
   
   // Log storage mode
   if (!process.env.DATABASE_URL) {
@@ -122,4 +92,5 @@ app.use((req, res, next) => {
   } else {
     log("✓ Database connection available", "info");
   }
-})();
+
+export default app;
