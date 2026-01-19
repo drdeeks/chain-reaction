@@ -24,11 +24,12 @@ export function log(message: string, source = "express") {
 
   
 
-  const app = express();
+
 
   
 
   module.exports = async () => {
+  const app = express();
 
   app.use(
     express.json({
